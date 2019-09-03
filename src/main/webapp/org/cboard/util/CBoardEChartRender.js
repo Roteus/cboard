@@ -36,11 +36,34 @@ var CBoardEChartRender = function (jqContainer, options, isDeepSpec) {
 
     this.basicOption = echartsBasicOption;
     this.options = options;
-    this.options.tooltip.formatter = function(params){
-        return params[0].name + '<br/>'
-            + params[0].marker + params[1].seriesName + ' : ' + parseFloat(params[1].value).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}) + '<br/>'
-            + params[0].marker + params[0].seriesName + ' : ' + parseFloat(params[0].value).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
-        };
+    this.options.tooltip.formatter = function(params) {
+        if (Array.isArray(params)) {
+            if (params[0].componentSubType == 'line') {
+                return params[0].name + '<br/>'
+                    + params[1].marker + params[1].seriesName + ' : ' + parseFloat(params[1].value).toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                    }) + '<br/>'
+                    + params[0].marker + params[0].seriesName + ' : ' + parseFloat(params[0].value).toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                    });
+            }
+        } else {
+            if (params.componentSubType == 'scatter') {
+                return params.seriesName + ' - ' + params.name + '<br/>' + parseFloat(params.value[1]).toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                });
+            } else if (params.componentSubType == 'pie') {
+                return params.seriesName + '</br>' + params.marker + params.name + ' : ' + parseFloat(params.value).toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                    })
+                    + ' ( ' + new String(params.percent).replace('.', ',') + ' % )' + '<br/>';
+            }
+        }
+    };
     };
 
 CBoardEChartRender.prototype.theme = "theme-fin1"; // 主题
